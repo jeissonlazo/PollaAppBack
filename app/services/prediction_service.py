@@ -1,15 +1,11 @@
-
-
 from app.models.prediction import Prediction
 from app.models.user_prediction import UserPrediction
 from sqlalchemy.orm import Session
+from datetime import datetime
+from app.models.match import Match
 
-def create_user_predictions(
-    db,
-    user_id,
-    group_id,
-    predictions
-):
+
+def create_user_predictions(db, user_id, group_id, predictions):
     prediction_set = UserPrediction(
         user_id=user_id,
         group_id=group_id
@@ -39,7 +35,8 @@ def create_user_predictions(
     db.commit()
 
     return prediction_set
-  
+
+
 def get_user_predictions_by_group(
     db: Session,
     user_id,
@@ -72,7 +69,7 @@ def get_user_predictions_by_group(
         "user_score": prediction_set.user_score,
         "predictions": predictions
     }
-    
+
 def save_predictions(
     db,
     user_id,
@@ -148,3 +145,56 @@ def save_predictions(
     db.commit()
 
     return prediction_set
+
+
+def update_prediction(db, prediction_id, score_team1, score_team2):
+    prediction = (
+        db.query(Prediction).filter(Prediction.prediction_id == prediction_id).first()
+    )
+
+    if not prediction:
+        return None
+
+    match = db.query(Match).filter(Match.match_id == prediction.match_id).first()
+
+    if not match:
+        raise Exception("Match not found")
+
+    if match.match_date <= datetime.utcnow():
+        raise Exception("Predictions can no longer be edited")
+
+    prediction.score_team1 = score_team1
+    prediction.score_team2 = score_team2
+
+    db.commit()
+    db.refresh(prediction)
+
+    return prediction
+
+
+def get_group_match_predictions(db, group_id, match_id):
+    match = db.query(Match).filter(Match.match_id == match_id).first()
+
+    if not match:
+        return None
+
+    if match.match_date > datetime.utcnow():
+        raise Exception("Predictions are hidden until the match starts")
+
+    results = (
+        db.query(
+            User.username,
+            User.id.label("user_id"),
+            Prediction.score_team1,
+            Prediction.score_team2,
+        )
+        .join(
+            UserPrediction,
+            UserPrediction.prediction_set_id == Prediction.prediction_set_id,
+        )
+        .join(User, User.id == UserPrediction.user_id)
+        .filter(UserPrediction.group_id == group_id, Prediction.match_id == match_id)
+        .all()
+    )
+
+    return results

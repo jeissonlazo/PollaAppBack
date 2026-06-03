@@ -10,15 +10,17 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 
 from app.schemas.prediction import (
+    PredictionUpdate,
     UserPredictionResponse,
-    UserPredictionCreate
+    UserPredictionCreate,
 )
 
 from app.services.prediction_service import (
+    get_group_match_predictions,
     get_user_predictions_by_group,
-    save_predictions
+    save_predictions,
+    update_prediction,
 )
-
 
 router = APIRouter(
     prefix="/predictions",
@@ -51,7 +53,7 @@ def get_user_predictions_endpoint(
         )
 
     return prediction_set
-  
+
 @router.post(
     "",
     status_code=status.HTTP_201_CREATED
@@ -72,3 +74,37 @@ def save_predictions_endpoint(
         "prediction_set_id":
             prediction_set.prediction_set_id
     }
+
+
+@router.put("/{prediction_id}")
+def update_prediction_endpoint(
+    prediction_id: UUID, request: PredictionUpdate, db: Session = Depends(get_db)
+):
+    prediction = update_prediction(
+        db=db,
+        prediction_id=prediction_id,
+        score_team1=request.score_team1,
+        score_team2=request.score_team2,
+    )
+
+    if not prediction:
+        raise HTTPException(status_code=404, detail="Prediction not found")
+
+    return prediction
+
+
+@router.get("/group/{group_id}/match/{match_id}")
+def get_group_match_predictions_endpoint(
+    group_id: UUID, match_id: UUID, db: Session = Depends(get_db)
+):
+    try:
+
+        predictions = get_group_match_predictions(
+            db=db, group_id=group_id, match_id=match_id
+        )
+
+        return predictions
+
+    except Exception as ex:
+
+        raise HTTPException(status_code=403, detail=str(ex))
