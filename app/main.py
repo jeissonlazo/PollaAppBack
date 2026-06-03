@@ -1,0 +1,26 @@
+from fastapi import FastAPI
+
+from app.routers.auth import router as auth_router
+from app.routers.groups import router as groups_router
+from app.routers.matches import router as matches_router
+from app.routers.predictions import router as predictions_router
+
+##core
+from app.core.database import Base
+from app.core.database import engine
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
+app.include_router(auth_router)
+app.include_router(groups_router)
+app.include_router(matches_router)
+app.include_router(predictions_router)
+
+
+@app.get("/")
+def health_check():
+    return {
+        "message": "API running"
+    }
