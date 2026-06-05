@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String
+from sqlalchemy import Boolean, Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
 
@@ -18,6 +18,16 @@ class User(Base):
         unique=True,
         nullable=False
     )
+
+    first_name = Column(String(50), unique=False, nullable=False)
+
+    last_name = Column(String(50), unique=False, nullable=False)
+
+    email_verified = Column(Boolean, default=False)
+
+    verification_code = Column(String(5), nullable=True)
+
+    verification_expires = Column(DateTime, nullable=True)
 
     email = Column(
         String(100),

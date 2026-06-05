@@ -19,6 +19,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+PollaApp.code-workspace
 
 # Virtual environments
 .venv/

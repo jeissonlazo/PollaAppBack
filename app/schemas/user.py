@@ -4,12 +4,21 @@ class UserCreate(BaseModel):
     username: str
     email: EmailStr
     password: str
+    first_name: str | None = None
+    last_name: str | None = None
 
 
 class UserResponse(BaseModel):
     id: str
     username: str
     email: str
+    first_name: str | None = None
+    last_name: str | None = None
 
     class Config:
         from_attributes = True
+
+
+class VerifyEmailRequest(BaseModel):
+    email: EmailStr
+    code: str
