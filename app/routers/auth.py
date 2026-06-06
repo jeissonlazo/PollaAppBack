@@ -7,6 +7,7 @@ from app.core.database import get_db
 from app.schemas.user import UserCreate, VerifyEmailRequest
 from app.services.auth_service import create_user, authenticate_user, verify_email
 from app.core.security import create_access_token
+from app.schemas.user import LoginRequest
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -19,15 +20,26 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login")
-def login(username: str, password: str, db: Session = Depends(get_db)):
+def login(request: LoginRequest, db: Session = Depends(get_db)):
 
-    user = authenticate_user(db, username, password)
+    user = authenticate_user(db, request.usernameOrEmail, request.password)
+
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = create_access_token({"sub": str(user.id)})
 
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+        },
+    }
 
 
 @router.post("/verify-email")

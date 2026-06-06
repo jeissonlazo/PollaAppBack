@@ -4,8 +4,7 @@ import string
 
 from sqlalchemy.orm import Session
 
-from app.models.group import Group
-
+from app.models.group import Group, GroupMember
 
 def generate_invite_code(length: int = 8) -> str:
     return ''.join(
@@ -44,6 +43,16 @@ def get_group_by_id(
         db.query(Group)
         .filter(Group.group_id == group_id)
         .first()
+    )
+
+
+def get_user_groups(db: Session, user_id: UUID):
+
+    return (
+        db.query(Group)
+        .join(GroupMember, Group.group_id == GroupMember.group_id)
+        .filter(GroupMember.user_id == user_id)
+        .all()
     )
 
 

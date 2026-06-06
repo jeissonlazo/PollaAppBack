@@ -15,36 +15,26 @@ from app.core.database import Base
 class Group(Base):
     __tablename__ = "groups"
 
-    group_id = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid4
-    )
+    group_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
-    admin_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("users.id"),
-        nullable=False
-    )
+    admin_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
 
-    name = Column(
-        String(100),
-        nullable=False
-    )
+    name = Column(String(100), nullable=False)
 
-    users_limit = Column(
-        Integer,
-        nullable=False,
-        default=10
-    )
+    users_limit = Column(Integer, nullable=False, default=10)
 
-    invite_code = Column(
-        String(20),
-        unique=True,
-        nullable=False
-    )
+    invite_code = Column(String(20), unique=True, nullable=False)
 
-    created_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now()
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class GroupMember(Base):
+    __tablename__ = "group_members"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+
+    group_id = Column(UUID(as_uuid=True), ForeignKey("groups.group_id"), nullable=False)
+
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+
+    joined_at = Column(DateTime(timezone=True), server_default=func.now())

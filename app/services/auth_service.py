@@ -38,11 +38,13 @@ async def create_user(
     return user
 
 
-def authenticate_user(
-    db: Session, username: str, password: str, email: str | None = None
-):
+def authenticate_user(db: Session, usernameOrEmail: str, password: str):
 
-    user = db.query(User).filter(User.username == username).first()
+    user = (
+        db.query(User)
+        .filter((User.username == usernameOrEmail) | (User.email == usernameOrEmail))
+        .first()
+    )
 
     if not user:
         return None

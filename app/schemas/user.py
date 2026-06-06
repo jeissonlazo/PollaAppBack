@@ -22,3 +22,8 @@ class UserResponse(BaseModel):
 class VerifyEmailRequest(BaseModel):
     email: EmailStr
     code: str
+
+
+class LoginRequest(BaseModel):
+    usernameOrEmail: str
+    password: str
