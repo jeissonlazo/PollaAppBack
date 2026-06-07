@@ -1,7 +1,9 @@
+from datetime import datetime
 from uuid import UUID
 import random
 import string
 
+from sqlalchemy import DateTime
 from sqlalchemy.orm import Session
 
 from app.models.group import Group, GroupMember
@@ -37,7 +39,7 @@ def create_group(
     db.add(group)
     db.commit()
     db.refresh(group)
-
+    add_user_to_group(db=db, group_id=group.group_id, user_id=admin_id)
     return group
 
 
@@ -101,3 +103,15 @@ def delete_group(
     db.commit()
 
     return True
+
+
+def add_user_to_group(db: Session, group_id: UUID, user_id: UUID):
+    group_member = GroupMember(
+        group_id=group_id, user_id=user_id, joined_at=datetime.utcnow()
+    )
+
+    db.add(group_member)
+    db.commit()
+    db.refresh(group_member)
+
+    return group_member
