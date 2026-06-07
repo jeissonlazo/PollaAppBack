@@ -19,13 +19,19 @@ def create_group(
     db: Session,
     admin_id: UUID,
     name: str,
-    users_limit: int
+    tournament_id: int,
+    users_limit: int,
+    description: str = None,
+    observations: str = None,
 ):
     group = Group(
         admin_id=admin_id,
         name=name,
         users_limit=users_limit,
-        invite_code=generate_invite_code()
+        description=description,
+        observations=observations,
+        tournament_id=tournament_id,
+        invite_code=generate_invite_code(),
     )
 
     db.add(group)
@@ -60,7 +66,7 @@ def update_group(
     db: Session,
     group_id: UUID,
     name: str,
-    users_limit: int
+    users_limit: int,
 ):
     group = get_group_by_id(
         db=db,

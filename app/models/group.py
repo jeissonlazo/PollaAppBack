@@ -11,7 +11,6 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from app.core.database import Base
 
-
 class Group(Base):
     __tablename__ = "groups"
 
@@ -22,6 +21,12 @@ class Group(Base):
     name = Column(String(100), nullable=False)
 
     users_limit = Column(Integer, nullable=False, default=10)
+
+    tournament_id = Column(Integer, ForeignKey("tournament.id"), nullable=False)
+
+    description = Column(String(200), nullable=True)
+
+    observations = Column(String(200), nullable=True)
 
     invite_code = Column(String(20), unique=True, nullable=False)
 

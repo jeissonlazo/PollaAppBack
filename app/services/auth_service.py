@@ -17,7 +17,6 @@ async def create_user(
 ):
 
     verification_code = generate_verification_code()
-    print(verification_code)
 
     user = User(
         username=username,
