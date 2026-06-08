@@ -14,6 +14,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/register")
 async def register(user: UserCreate, db: Session = Depends(get_db)):
+    print(f"Registering user: {user.username}, {user.email}")
     return await create_user(
         db, user.username, user.email, user.password, user.first_name, user.last_name
     )

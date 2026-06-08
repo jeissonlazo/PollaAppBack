@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from sqlalchemy import Column
+from sqlalchemy import Boolean, Column, func
 from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import DateTime
@@ -14,46 +14,28 @@ from app.core.database import Base
 class Match(Base):
     __tablename__ = "matches"
 
-    match_id = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid4
-    )
+    match_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
-    round = Column(
-        String(50),
-        nullable=False
-    )
+    round = Column(String(50), nullable=False)
 
-    match_date = Column(
-        DateTime,
-        nullable=False
-    )
+    time = Column(String(20))
 
-    group_name = Column(
-        String(10)
-    )
+    match_date = Column(DateTime, nullable=False)
 
-    ground = Column(
-        String(100)
-    )
+    group_name = Column(String(10))
 
-    team1_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("teams.team_id")
-    )
+    ground = Column(String(100))
 
-    team2_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("teams.team_id")
-    )
+    team1_id = Column(UUID(as_uuid=True), ForeignKey("teams.team_id"))
 
-    score_team1 = Column(
-        Integer,
-        default=0
-    )
+    team2_id = Column(UUID(as_uuid=True), ForeignKey("teams.team_id"))
 
-    score_team2 = Column(
-        Integer,
-        default=0
-    )
+    score_team1 = Column(Integer, default=0)
+
+    score_team2 = Column(Integer, default=0)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    finish = Column(Boolean, default=False)
+
+    defined = Column(Boolean, default=False)

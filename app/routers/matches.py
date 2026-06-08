@@ -54,10 +54,7 @@ def get_matches_endpoint(
     db: Session = Depends(get_db)
 ):
     if round:
-        return get_matches_by_round(
-            db=db,
-            round_name=round
-        )
+        return get_matches_by_round(db=db, round_name=round)
 
     return get_matches(db=db)
 
