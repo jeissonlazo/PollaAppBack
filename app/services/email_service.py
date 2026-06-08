@@ -1,13 +1,12 @@
+from pydoc import html
+
 from fastapi_mail import FastMail
 from fastapi_mail import MessageSchema
 
 from app.core.mail import conf
 
 
-async def send_verification_email(
-    email: str,
-    code: str
-):
+async def send_verification_email(email: str, code: str):
 
     message = MessageSchema(
         subject="Confirm your account",
@@ -21,7 +20,7 @@ async def send_verification_email(
 
         This code expires in 15 minutes.
         """,
-        subtype="plain"
+        subtype="plain",
     )
 
     fm = FastMail(conf)

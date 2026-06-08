@@ -5,7 +5,9 @@ from app.models.user import User
 from app.core.email_verification import generate_verification_code
 from app.core.security import hash_password, verify_password
 from app.services.email_service import send_verification_email
-
+from sqlalchemy import or_
+from fastapi import HTTPException
+import traceback
 
 async def create_user(
     db: Session,
@@ -15,6 +17,19 @@ async def create_user(
     first_name: str | None = None,
     last_name: str | None = None,
 ):
+
+    existing_user = (
+        db.query(User)
+        .filter(or_(User.username == username, User.email == email))
+        .first()
+    )
+
+    if existing_user:
+        if existing_user.username == username:
+            raise HTTPException(status_code=409, detail="Username already exists")
+
+        if existing_user.email == email:
+            raise HTTPException(status_code=409, detail="Email already exists")
 
     verification_code = generate_verification_code()
 
@@ -32,15 +47,13 @@ async def create_user(
     try:
         await send_verification_email(user.email, verification_code)
     except Exception as e:
-        print("Error enviando email:", e)
+        traceback.print_exc()
 
     db.add(user)
     db.commit()
     db.refresh(user)
 
     return user
-
-
 def authenticate_user(db: Session, usernameOrEmail: str, password: str):
 
     user = (

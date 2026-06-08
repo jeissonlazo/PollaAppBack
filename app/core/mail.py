@@ -5,9 +5,8 @@ from app.core.config import (
     MAIL_PASSWORD,
     MAIL_FROM,
     MAIL_SERVER,
-    MAIL_PORT
+    MAIL_PORT,
 )
-
 
 conf = ConnectionConfig(
     MAIL_USERNAME=MAIL_USERNAME,
@@ -15,7 +14,7 @@ conf = ConnectionConfig(
     MAIL_FROM=MAIL_FROM,
     MAIL_PORT=MAIL_PORT,
     MAIL_SERVER=MAIL_SERVER,
-    MAIL_STARTTLS=True,
-    MAIL_SSL_TLS=False,
-    USE_CREDENTIALS=True
+    MAIL_STARTTLS=False,
+    MAIL_SSL_TLS=True,
+    USE_CREDENTIALS=True,
 )
