@@ -29,7 +29,11 @@ async def create_user(
         verification_expires=datetime.utcnow() + timedelta(minutes=15),
     )
 
-    await send_verification_email(user.email, verification_code)
+    try:
+        await send_verification_email(user.email, verification_code)
+    except Exception as e:
+        print("Error enviando email:", e)
+
     db.add(user)
     db.commit()
     db.refresh(user)
