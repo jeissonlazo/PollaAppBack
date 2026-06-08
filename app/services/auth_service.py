@@ -45,7 +45,7 @@ async def create_user(
     )
 
     try:
-        await send_verification_email(user.email, verification_code)
+        send_verification_email(user.email, verification_code)
     except Exception as e:
         traceback.print_exc()
 

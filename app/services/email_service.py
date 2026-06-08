@@ -1,28 +1,31 @@
-from pydoc import html
+import os
+import resend
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+from dotenv import load_dotenv
 
-from fastapi_mail import FastMail
-from fastapi_mail import MessageSchema
+load_dotenv()
 
-from app.core.mail import conf
+resend.api_key = os.getenv("RESEND_API_KEY")
 
 
-async def send_verification_email(email: str, code: str):
-
-    message = MessageSchema(
-        subject="Confirm your account",
-        recipients=[email],
-        body=f"""
-        Welcome to Polla Mundial!
-
-        Your verification code is:
-
-        {code}
-
-        This code expires in 15 minutes.
+def send_verification_email(email: str, code: str):
+    print(os.getenv("RESEND_API_KEY"))
+    resend.Emails.send(
+        {
+            "from": "onboarding@resend.dev",
+            "to": email,
+            "subject": "Verifica tu correo",
+            "html": f"""
+            <h2>Bienvenido a pollapp 👋</h2>
+            <p>este es tu codigo de verificacion: {code}</p>
+            <a"
+              style="background:#4f46e5;color:white;padding:12px 24px;
+                      border-radius:6px;text-decoration:none;display:inline-block">
+              {code}
+            </a>
+            <p style="color:#888;font-size:12px;margin-top:16px">
+              Este enlace expira en 1 hora.
+            </p>
         """,
-        subtype="plain",
+        }
     )
-
-    fm = FastMail(conf)
-
-    await fm.send_message(message)
