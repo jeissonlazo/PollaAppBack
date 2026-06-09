@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-
+from sqlalchemy.orm import joinedload
 from app.models.match import Match
 
 def create_match(
@@ -13,7 +13,7 @@ def create_match(
     db.refresh(match)
 
     return match
-  
+
 def get_match_by_id(
     db: Session,
     match_id
@@ -25,23 +25,15 @@ def get_match_by_id(
         )
         .first()
     )
-    
+
+
 def get_matches(
     db: Session
 ):
     return (
-        db.query(Match)
-        .all()
+        db.query(Match).options(joinedload(Match.team1), joinedload(Match.team2)).all()
     )
-    
-def get_matches(
-    db: Session
-):
-    return (
-        db.query(Match)
-        .all()
-    )
-    
+
 def update_match(
     db: Session,
     match_id,
@@ -66,7 +58,7 @@ def update_match(
     db.refresh(match)
 
     return match
-  
+
 
 def delete_match(
     db: Session,
@@ -84,7 +76,7 @@ def delete_match(
     db.commit()
 
     return True
-  
+
 def get_matches_by_round(
     db: Session,
     round_name: str

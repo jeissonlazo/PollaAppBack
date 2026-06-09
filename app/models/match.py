@@ -5,9 +5,9 @@ from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
-
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
-
+from app.models.team import Team
 from app.core.database import Base
 
 
@@ -29,6 +29,10 @@ class Match(Base):
     team1_id = Column(UUID(as_uuid=True), ForeignKey("teams.team_id"))
 
     team2_id = Column(UUID(as_uuid=True), ForeignKey("teams.team_id"))
+
+    team1 = relationship("Team", foreign_keys=[team1_id])
+
+    team2 = relationship("Team", foreign_keys=[team2_id])
 
     score_team1 = Column(Integer, default=0)
 

@@ -4,6 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from app.schemas.team import TeamResponse
 
 class MatchCreate(BaseModel):
     round: str
@@ -32,6 +33,9 @@ class MatchResponse(BaseModel):
 
     team1_id: Optional[UUID] = None
     team2_id: Optional[UUID] = None
+
+    team1: TeamResponse | None = None
+    team2: TeamResponse | None = None
 
     score_team1: int
     score_team2: int
