@@ -16,11 +16,15 @@ class MatchCreate(BaseModel):
 
 
 class MatchUpdate(BaseModel):
+    match_id: UUID
     round: str
     group_name: str | None = None
     ground: str
     score_team1: int
     score_team2: int
+    team1_id: UUID
+    team2_id: UUID
+    finish: bool
 
 
 class MatchResponse(BaseModel):
@@ -30,7 +34,7 @@ class MatchResponse(BaseModel):
     group_name: str | None
     ground: str
     time: str
-
+    finish: bool
     team1_id: Optional[UUID] = None
     team2_id: Optional[UUID] = None
 

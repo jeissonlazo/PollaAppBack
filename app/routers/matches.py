@@ -95,6 +95,8 @@ def update_match_endpoint(
         match_data=match
     )
 
+    print(updated_match)
+
     if not updated_match:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
