@@ -28,29 +28,25 @@ router = APIRouter(
 )
 
 
-@router.get(
-    "/group/{group_id}/user/{user_id}",
-    response_model=UserPredictionResponse
-)
+@router.get("/group/{group_id}/user/{user_id}", response_model=UserPredictionResponse)
+@router.get("/group/{group_id}/user/{user_id}", response_model=UserPredictionResponse)
 def get_user_predictions_endpoint(
     group_id: UUID,
     user_id: UUID,
     db: Session = Depends(get_db)
 ):
 
-    prediction_set = (
-        get_user_predictions_by_group(
-            db=db,
-            user_id=user_id,
-            group_id=group_id
-        )
+    prediction_set = get_user_predictions_by_group(
+        db=db, user_id=user_id, group_id=group_id
     )
 
     if not prediction_set:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Predictions not found"
-        )
+        return {
+            "user_id": str(user_id),
+            "group_id": str(group_id),
+            "user_score": 0,
+            "predictions": [],
+        }
 
     return prediction_set
 

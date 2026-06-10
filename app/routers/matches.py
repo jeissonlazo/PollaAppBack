@@ -58,7 +58,6 @@ def get_matches_endpoint(
 
     return get_matches(db=db)
 
-
 @router.get(
     "/{match_id}",
     response_model=MatchResponse
