@@ -12,7 +12,7 @@ def send_verification_email(email: str, code: str):
     print(os.getenv("RESEND_API_KEY"))
     resend.Emails.send(
         {
-            "from": "onboarding@resend.dev",
+            "from": "noreply@pollapp.xyz",
             "to": email,
             "subject": "Verifica tu correo",
             "html": f"""
