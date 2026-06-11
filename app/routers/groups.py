@@ -15,6 +15,8 @@ from app.schemas.group import (
 )
 
 from app.services.group_service import (
+    add_user_to_group,
+    add_user_to_group_by_invite_code,
     create_group,
     get_group_by_id,
     update_group,
@@ -69,6 +71,18 @@ def update_group_endpoint(
         )
 
     return updated_group
+
+
+@router.post("/join/{invite_code}", response_model=GroupResponse)
+def join_group(invite_code: str, user_id: UUID, db: Session = Depends(get_db)):
+    member = add_user_to_group_by_invite_code(
+        db=db, invite_code=invite_code, user_id=user_id
+    )
+
+    if not member:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    return member
 
 
 @router.delete("/{group_id}", status_code=status.HTTP_204_NO_CONTENT)
