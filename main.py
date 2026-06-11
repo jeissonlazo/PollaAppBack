@@ -13,7 +13,7 @@ from app.core.database import engine
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
+# corss
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
