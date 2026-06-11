@@ -144,7 +144,7 @@ def add_user_to_group_by_invite_code(db: Session, invite_code: str, user_id: UUI
 
 def add_user_to_group(db: Session, group_id: UUID, user_id: UUID):
     group_member = GroupMember(
-        group_id=group.group_id, user_id=user_id, joined_at=datetime.utcnow()
+        group_id=group_id, user_id=user_id, joined_at=datetime.utcnow()
     )
 
     db.add(group_member)
