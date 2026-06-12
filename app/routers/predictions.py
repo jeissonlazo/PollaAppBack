@@ -29,7 +29,6 @@ router = APIRouter(
 
 
 @router.get("/group/{group_id}/user/{user_id}", response_model=UserPredictionResponse)
-@router.get("/group/{group_id}/user/{user_id}", response_model=UserPredictionResponse)
 def get_user_predictions_endpoint(
     group_id: UUID,
     user_id: UUID,
