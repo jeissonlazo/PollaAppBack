@@ -4,8 +4,21 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.schemas.user import UserCreate, VerifyEmailRequest
-from app.services.auth_service import create_user, authenticate_user, verify_email
+from app.schemas.user import (
+    ChangePasswordRequest,
+    RecoveryCode,
+    UserCreate,
+    ValidateCode,
+    VerifyEmailRequest,
+)
+from app.services.auth_service import (
+    change_password,
+    create_user,
+    authenticate_user,
+    forgot_password,
+    validate_reset_code,
+    verify_email,
+)
 from app.core.security import create_access_token
 from app.schemas.user import LoginRequest
 
@@ -52,3 +65,49 @@ def verify_email_endpoint(request: VerifyEmailRequest, db: Session = Depends(get
         raise HTTPException(status_code=400, detail="Invalid code")
 
     return {"message": "Email verified"}
+
+
+@router.post("/send-recovery-code")
+async def forgot_password_endpoint(
+    request: RecoveryCode, db: Session = Depends(get_db)
+):
+    print(f"Received forgot password request for: {request.usernameOrEmail}")
+    success = await forgot_password(db=db, username_or_email=request.usernameOrEmail)
+
+    if not success:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {"message": "Verification code sent"}
+
+
+@router.post("/validate-recovery-code")
+def forgot_password_code_validation_endpoint(
+    request: ValidateCode, db: Session = Depends(get_db)
+):
+    print(f"Received recovery code validation request for: {request.usernameOrEmail}")
+    success = validate_reset_code(
+        db=db, username_or_email=request.usernameOrEmail, code=request.code
+    )
+
+    if not success:
+        raise HTTPException(status_code=400, detail="Invalid code")
+
+    return {"message": "Code is valid"}
+
+
+@router.post("/reset-password")
+def reset_password_endpoint(
+    request: ChangePasswordRequest, db: Session = Depends(get_db)
+):
+    print(f"Received password reset request for: {request.usernameOrEmail}")
+    success = change_password(
+        db=db,
+        username_or_email=request.usernameOrEmail,
+        code=request.code,
+        new_password=request.new_password,
+    )
+
+    if not success:
+        raise HTTPException(status_code=400, detail="Invalid code")
+
+    return {"message": "Code is valid"}

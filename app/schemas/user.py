@@ -27,3 +27,18 @@ class VerifyEmailRequest(BaseModel):
 class LoginRequest(BaseModel):
     usernameOrEmail: str
     password: str
+
+
+class RecoveryCode(BaseModel):
+    usernameOrEmail: str
+
+
+class ValidateCode(BaseModel):
+    usernameOrEmail: str
+    code: str
+
+
+class ChangePasswordRequest(BaseModel):
+    usernameOrEmail: str
+    code: str
+    new_password: str

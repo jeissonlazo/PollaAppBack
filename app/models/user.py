@@ -39,3 +39,6 @@ class User(Base):
         String,
         nullable=False
     )
+
+    reset_code = Column(String(5), nullable=True)
+    reset_code_expires = Column(DateTime, nullable=True)

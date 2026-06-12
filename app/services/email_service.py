@@ -9,7 +9,6 @@ resend.api_key = os.getenv("RESEND_API_KEY")
 
 
 def send_verification_email(email: str, code: str):
-    print(os.getenv("RESEND_API_KEY"))
     resend.Emails.send(
         {
             "from": "noreply@pollapp.xyz",
@@ -26,6 +25,22 @@ def send_verification_email(email: str, code: str):
             <p style="color:#888;font-size:12px;margin-top:16px">
               Este enlace expira en 1 hora.
             </p>
+        """,
+        }
+    )
+
+
+def send_reset_password_email(email: str, code: str):
+    resend.Emails.send(
+        {
+            "from": "noreply@pollapp.xyz",
+            "to": email,
+            "subject": "Password recovery",
+            "html": f"""
+        <h2>Password Recovery</h2>
+        <p>Your verification code is:</p>
+        <h1>{code}</h1>
+        <p>This code expires in 15 minutes.</p>
         """,
         }
     )
