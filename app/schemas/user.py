@@ -1,4 +1,7 @@
+from click import UUID
 from pydantic import BaseModel, EmailStr
+
+from app.core.database import Base
 
 class UserCreate(BaseModel):
     username: str

@@ -3,7 +3,7 @@ from random import random
 from sqlalchemy.orm import Session
 from datetime import datetime
 from datetime import timedelta
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.core.email_verification import generate_verification_code
 from app.core.security import hash_password, verify_password
 from app.schemas import user
@@ -67,7 +67,7 @@ def authenticate_user(db: Session, usernameOrEmail: str, password: str):
 
     user = (
         db.query(User)
-        .filter((User.username == usernameOrEmail) | (User.email == usernameOrEmail))
+        .filter(or_(User.username == usernameOrEmail, User.email == usernameOrEmail))
         .first()
     )
 
@@ -76,6 +76,11 @@ def authenticate_user(db: Session, usernameOrEmail: str, password: str):
 
     if not verify_password(password, user.password_hash):
         return None
+
+    # obtener roles
+    roles = db.query(UserRole.role_id).filter(UserRole.user_id == user.id).all()
+
+    user.roles = [r.role_id for r in roles]
 
     return user
 
