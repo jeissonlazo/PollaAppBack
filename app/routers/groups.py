@@ -101,3 +101,9 @@ def delete_group_endpoint(group_id: UUID, db: Session = Depends(get_db)):
 def get_user_groups_endpoint(user_id: UUID, db: Session = Depends(get_db)):
     groups = get_user_groups(db=db, user_id=user_id)
     return groups
+
+
+@router.get("/{group_id}/group_positions", response_model=list[GroupResponse])
+def get_group_positions_endpoint(group_id: UUID, db: Session = Depends(get_db)):
+    positions = get_group_positions(db=db, group_id=group_id)
+    return positions

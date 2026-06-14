@@ -152,3 +152,7 @@ def add_user_to_group(db: Session, group_id: UUID, user_id: UUID):
     db.refresh(group_member)
 
     return group_member
+
+
+def get_group_positions(db: Session, group_id: UUID):
+    db.query()
