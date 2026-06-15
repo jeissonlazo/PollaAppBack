@@ -5,16 +5,12 @@ import string
 
 from sqlalchemy import DateTime
 from sqlalchemy.orm import Session
-
+from sqlalchemy.orm import joinedload
 from app.models.group import Group, GroupMember
 
+
 def generate_invite_code(length: int = 8) -> str:
-    return ''.join(
-        random.choices(
-            string.ascii_uppercase + string.digits,
-            k=length
-        )
-    )
+    return "".join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
 def create_group(
@@ -43,15 +39,8 @@ def create_group(
     return group
 
 
-def get_group_by_id(
-    db: Session,
-    group_id: UUID
-):
-    return (
-        db.query(Group)
-        .filter(Group.group_id == group_id)
-        .first()
-    )
+def get_group_by_id(db: Session, group_id: UUID):
+    return db.query(Group).filter(Group.group_id == group_id).first()
 
 
 def get_user_groups(db: Session, user_id: UUID):
@@ -70,10 +59,7 @@ def update_group(
     name: str,
     users_limit: int,
 ):
-    group = get_group_by_id(
-        db=db,
-        group_id=group_id
-    )
+    group = get_group_by_id(db=db, group_id=group_id)
 
     if not group:
         return None
@@ -87,14 +73,8 @@ def update_group(
     return group
 
 
-def delete_group(
-    db: Session,
-    group_id: UUID
-):
-    group = get_group_by_id(
-        db=db,
-        group_id=group_id
-    )
+def delete_group(db: Session, group_id: UUID):
+    group = get_group_by_id(db=db, group_id=group_id)
 
     if not group:
         return False
@@ -154,5 +134,10 @@ def add_user_to_group(db: Session, group_id: UUID, user_id: UUID):
     return group_member
 
 
-def get_group_positions(db: Session, group_id: UUID):
-    db.query()
+def get_group_members(db: Session, group_id: UUID):
+    return (
+        db.query(GroupMember)
+        .options(joinedload(GroupMember.user))
+        .filter(GroupMember.group_id == group_id)
+        .all()
+    )

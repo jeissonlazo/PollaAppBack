@@ -11,14 +11,17 @@ from app.core.database import get_db
 
 from app.schemas.group import (
     GroupCreate,
-    GroupResponse
+    GroupJoin,
+    GroupResponse,
+    GroupMember,
+    GroupUserPositions,
 )
 
 from app.services.group_service import (
-    add_user_to_group,
     add_user_to_group_by_invite_code,
     create_group,
     get_group_by_id,
+    get_group_members,
     update_group,
     delete_group,
     get_user_groups,
@@ -73,12 +76,13 @@ def update_group_endpoint(
     return updated_group
 
 
-@router.post("/join/{invite_code}", response_model=GroupResponse)
-def join_group(invite_code: str, user_id: UUID, db: Session = Depends(get_db)):
+@router.post("/join", response_model=GroupMember)
+def join_group(group_join: GroupJoin, db: Session = Depends(get_db)):
+    print(group_join.invite_code, group_join.user_id)
     member = add_user_to_group_by_invite_code(
-        db=db, invite_code=invite_code, user_id=user_id
+        db=db, invite_code=group_join.invite_code, user_id=group_join.user_id
     )
-
+    print(member)
     if not member:
         raise HTTPException(status_code=404, detail="Group not found")
 
@@ -103,7 +107,18 @@ def get_user_groups_endpoint(user_id: UUID, db: Session = Depends(get_db)):
     return groups
 
 
-@router.get("/{group_id}/group_positions", response_model=list[GroupResponse])
-def get_group_positions_endpoint(group_id: UUID, db: Session = Depends(get_db)):
-    positions = get_group_positions(db=db, group_id=group_id)
-    return positions
+@router.get("/{group_id}/ranking", response_model=list[GroupUserPositions])
+def get_group_members_endpoint(group_id: UUID, db: Session = Depends(get_db)):
+    members = get_group_members(db=db, group_id=group_id)
+
+    return [
+        GroupUserPositions(
+            user_id=member.user_id,
+            group_id=member.group_id,
+            username=member.user.username,
+            email=member.user.email,
+            first_name=member.user.first_name,
+            last_name=member.user.last_name,
+        )
+        for member in members
+    ]

@@ -22,3 +22,29 @@ class GroupResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class GroupMember(BaseModel):
+    user_id: UUID
+    group_id: UUID
+
+    class Config:
+        from_attributes = True
+
+
+class GroupUserPositions(BaseModel):
+    user_id: UUID
+    username: str
+    group_id: UUID
+    email: str
+    first_name: str
+    last_name: str
+    user_score: int | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class GroupJoin(BaseModel):
+    invite_code: str
+    user_id: UUID

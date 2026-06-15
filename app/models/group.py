@@ -6,9 +6,9 @@ from sqlalchemy import Integer
 from sqlalchemy import ForeignKey
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
-
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
-
+from app.models.user import User
 from app.core.database import Base
 
 class Group(Base):
@@ -43,3 +43,5 @@ class GroupMember(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
 
     joined_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", foreign_keys=[user_id])
