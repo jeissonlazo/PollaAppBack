@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
 from app.models.match import Match
+from app.services.scoring_service import score_match_predictions
 
 def create_match(
     db: Session,
@@ -39,26 +40,24 @@ def update_match(
     match_id,
     match_data
 ):
-    match = get_match_by_id(
-        db,
-        match_id
-    )
+    match = get_match_by_id(db, match_id)
 
     if not match:
         return None
 
-    for key, value in match_data.dict().items():
-        setattr(
-            match,
-            key,
-            value
-        )
+    was_finished = match.finish
+
+    for key, value in match_data.dict(exclude_unset=True).items():
+        setattr(match, key, value)
 
     db.commit()
     db.refresh(match)
 
-    return match
+    # Solo cuando pasa de False → True
+    if not was_finished and match.finish:
+        score_match_predictions(db, match)
 
+    return match
 
 def delete_match(
     db: Session,
