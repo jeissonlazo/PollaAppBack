@@ -46,3 +46,12 @@ class UserPredictionResponse(BaseModel):
     user_score: int
 
     predictions: list[PredictionResponse]
+
+
+class UsersMatchPredictionResponse(BaseModel):
+    user_id: UUID
+    username: str
+    score_team1: int
+    score_team2: int
+    first_name: str
+    last_name: str

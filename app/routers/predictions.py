@@ -13,6 +13,7 @@ from app.schemas.prediction import (
     PredictionUpdate,
     UserPredictionResponse,
     UserPredictionCreate,
+    UsersMatchPredictionResponse,
 )
 
 from app.services.prediction_service import (
@@ -88,7 +89,10 @@ def update_prediction_endpoint(
     return prediction
 
 
-@router.get("/group/{group_id}/match/{match_id}")
+@router.get(
+    "/group/{group_id}/match/{match_id}",
+    response_model=list[UsersMatchPredictionResponse],
+)
 def get_group_match_predictions_endpoint(
     group_id: UUID, match_id: UUID, db: Session = Depends(get_db)
 ):
