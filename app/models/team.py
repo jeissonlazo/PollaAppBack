@@ -3,7 +3,7 @@
 from uuid import uuid4
 
 from sqlalchemy import Column
-from sqlalchemy import String
+from sqlalchemy import String, Integer
 
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -34,3 +34,5 @@ class Team(Base):
         String(255),
         nullable=False
     )
+
+    external_id = Column(Integer(), unique=True, nullable=True)

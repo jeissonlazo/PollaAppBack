@@ -169,7 +169,19 @@ def get_group_match_predictions(db, group_id, match_id):
         return None
 
     # Ocultar resultados hasta que empiece el partido
-    if match.match_date > datetime.utcnow():
+    if match.match_date <= datetime.utcnow():
+        return [
+            {
+                "user_id": prediction.user_id,
+                "username": prediction.username,
+                "score_team1": prediction.score_team1,
+                "score_team2": prediction.score_team2,
+                "first_name": prediction.first_name,
+                "last_name": prediction.last_name,
+            }
+            for prediction in predictions
+        ]
+    else:
         return [
             {
                 "user_id": prediction.user_id,

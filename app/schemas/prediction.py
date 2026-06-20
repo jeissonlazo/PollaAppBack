@@ -51,7 +51,7 @@ class UserPredictionResponse(BaseModel):
 class UsersMatchPredictionResponse(BaseModel):
     user_id: UUID
     username: str
-    score_team1: int
-    score_team2: int
+    score_team1: int | None
+    score_team2: int | None
     first_name: str
     last_name: str

@@ -19,6 +19,7 @@ class TeamResponse(BaseModel):
     country: str
     code: str
     flag: str
+    external_id: int | None
 
     model_config = {
         "from_attributes": True
