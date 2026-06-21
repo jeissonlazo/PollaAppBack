@@ -39,7 +39,7 @@ def get_user_predictions_endpoint(
     prediction_set = get_user_predictions_by_group(
         db=db, user_id=user_id, group_id=group_id
     )
-
+    print(prediction_set)
     if not prediction_set:
         return {
             "user_id": str(user_id),

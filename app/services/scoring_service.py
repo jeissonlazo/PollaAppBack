@@ -4,29 +4,18 @@ from app.models.prediction import Prediction
 from app.models.user_prediction import UserPrediction
 
 from app.models.match import Match
-
+from app.schemas import match
 
 def calculate_points(
-    real_team1: int,
-    real_team2: int,
-    pred_team1: int,
-    pred_team2: int
+    real_team1: int, real_team2: int, pred_team1: int, pred_team2: int
 ) -> int:
 
     points = 0
 
     # ganador
-    real_result = (
-        1 if real_team1 > real_team2
-        else -1 if real_team1 < real_team2
-        else 0
-    )
+    real_result = 1 if real_team1 > real_team2 else -1 if real_team1 < real_team2 else 0
 
-    pred_result = (
-        1 if pred_team1 > pred_team2
-        else -1 if pred_team1 < pred_team2
-        else 0
-    )
+    pred_result = 1 if pred_team1 > pred_team2 else -1 if pred_team1 < pred_team2 else 0
 
     if real_result == pred_result:
         points += 5
@@ -49,15 +38,10 @@ def calculate_points(
     return points
 
 
-def score_match_predictions(
-    db: Session,
-    match: Match
-):
+def score_match_predictions(db: Session, match: Match):
 
     predictions = (
-        db.query(Prediction)
-        .filter(Prediction.match_id == match.match_id)
-        .all()
+        db.query(Prediction).filter(Prediction.match_id == match.match_id).all()
     )
 
     for prediction in predictions:
@@ -70,20 +54,19 @@ def score_match_predictions(
             match.score_team1,
             match.score_team2,
             prediction.score_team1,
-            prediction.score_team2
+            prediction.score_team2,
         )
 
         prediction.ended = True
 
         user_prediction = (
             db.query(UserPrediction)
-            .filter(
-                UserPrediction.user_id == prediction.user_id,
-                UserPrediction.group_id == prediction.group_id
-            )
+            .filter(UserPrediction.prediction_set_id == prediction.prediction_set_id)
             .first()
         )
-
+        print(
+            f"Match {match.match_id} - Prediction {prediction.prediction_id} - Points: {points}"
+        )
         if user_prediction:
             user_prediction.user_score += points
 

@@ -36,7 +36,6 @@ def get_user_predictions_by_group(db: Session, user_id, group_id):
         .filter(UserPrediction.user_id == user_id, UserPrediction.group_id == group_id)
         .first()
     )
-
     if not prediction_set:
         return None
 
@@ -79,7 +78,6 @@ def save_predictions(db, user_id, group_id, predictions):
             )
             .first()
         )
-
         if existing_prediction:
 
             # No permitir editar partidos terminados
@@ -101,7 +99,7 @@ def save_predictions(db, user_id, group_id, predictions):
                 score_team1=item.score_team1,
                 score_team2=item.score_team2,
             )
-
+            print("Adding new prediction")
             db.add(prediction)
 
     db.commit()
