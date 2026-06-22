@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
-
+from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 
@@ -35,7 +35,6 @@ class UserRole(Base):
 
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), primary_key=True)
     role_id = Column(Integer, ForeignKey("roles.id"), primary_key=True)
-
 
 class Role(Base):
     __tablename__ = "roles"

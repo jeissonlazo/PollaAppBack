@@ -99,7 +99,6 @@ def save_predictions(db, user_id, group_id, predictions):
                 score_team1=item.score_team1,
                 score_team2=item.score_team2,
             )
-            print("Adding new prediction")
             db.add(prediction)
 
     db.commit()

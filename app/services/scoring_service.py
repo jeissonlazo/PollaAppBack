@@ -64,9 +64,6 @@ def score_match_predictions(db: Session, match: Match):
             .filter(UserPrediction.prediction_set_id == prediction.prediction_set_id)
             .first()
         )
-        print(
-            f"Match {match.match_id} - Prediction {prediction.prediction_id} - Points: {points}"
-        )
         if user_prediction:
             user_prediction.user_score += points
 

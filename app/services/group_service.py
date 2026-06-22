@@ -7,7 +7,8 @@ from sqlalchemy import DateTime
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
 from app.models.group import Group, GroupMember
-
+from app.models.user import User
+from app.models.user_prediction import UserPrediction
 
 def generate_invite_code(length: int = 8) -> str:
     return "".join(random.choices(string.ascii_uppercase + string.digits, k=length))
@@ -135,9 +136,13 @@ def add_user_to_group(db: Session, group_id: UUID, user_id: UUID):
 
 
 def get_group_members(db: Session, group_id: UUID):
-    return (
-        db.query(GroupMember)
+
+    members = (
+        db.query(GroupMember, UserPrediction)
         .options(joinedload(GroupMember.user))
         .filter(GroupMember.group_id == group_id)
+        .join(UserPrediction, UserPrediction.user_id == GroupMember.user_id)
+        .filter(UserPrediction.group_id == group_id)
         .all()
     )
+    return members

@@ -53,17 +53,9 @@ def seed_teams():
 
         db.commit()
 
-        print(
-            f"Inserted: {inserted}, Skipped: {skipped}"
-        )
-
     except Exception as ex:
 
         db.rollback()
-
-        print(
-            f"Error seeding teams: {ex}"
-        )
 
     finally:
 

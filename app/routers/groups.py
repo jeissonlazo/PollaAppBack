@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 
+from app.schemas import prediction
 from app.schemas.group import (
     GroupCreate,
     GroupJoin,
@@ -32,7 +33,6 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
 
 @router.post("", response_model=GroupResponse, status_code=status.HTTP_201_CREATED)
 def create_group_endpoint(group: GroupCreate, db: Session = Depends(get_db)):
-    print(group)
     return create_group(
         db=db,
         admin_id=group.admin_id,
@@ -78,11 +78,9 @@ def update_group_endpoint(
 
 @router.post("/join", response_model=GroupMember)
 def join_group(group_join: GroupJoin, db: Session = Depends(get_db)):
-    print(group_join.invite_code, group_join.user_id)
     member = add_user_to_group_by_invite_code(
         db=db, invite_code=group_join.invite_code, user_id=group_join.user_id
     )
-    print(member)
     if not member:
         raise HTTPException(status_code=404, detail="Group not found")
 
@@ -110,7 +108,6 @@ def get_user_groups_endpoint(user_id: UUID, db: Session = Depends(get_db)):
 @router.get("/{group_id}/ranking", response_model=list[GroupUserPositions])
 def get_group_members_endpoint(group_id: UUID, db: Session = Depends(get_db)):
     members = get_group_members(db=db, group_id=group_id)
-
     return [
         GroupUserPositions(
             user_id=member.user_id,
@@ -119,6 +116,7 @@ def get_group_members_endpoint(group_id: UUID, db: Session = Depends(get_db)):
             email=member.user.email,
             first_name=member.user.first_name,
             last_name=member.user.last_name,
+            user_score=prediction.user_score,
         )
-        for member in members
+        for member, prediction in members
     ]

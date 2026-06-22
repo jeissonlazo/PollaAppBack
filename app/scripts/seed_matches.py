@@ -61,8 +61,6 @@ def seed_matches():
     db.commit()
     db.close()
 
-    print("Matches seeded successfully")
-
 
 if __name__ == "__main__":
     seed_matches()

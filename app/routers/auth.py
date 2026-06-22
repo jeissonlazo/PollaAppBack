@@ -27,7 +27,6 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/register")
 async def register(user: UserCreate, db: Session = Depends(get_db)):
-    print(f"Registering user: {user.username}, {user.email}")
     return await create_user(
         db, user.username, user.email, user.password, user.first_name, user.last_name
     )
@@ -72,7 +71,6 @@ def verify_email_endpoint(request: VerifyEmailRequest, db: Session = Depends(get
 async def forgot_password_endpoint(
     request: RecoveryCode, db: Session = Depends(get_db)
 ):
-    print(f"Received forgot password request for: {request.usernameOrEmail}")
     success = await forgot_password(db=db, username_or_email=request.usernameOrEmail)
 
     if not success:
@@ -85,7 +83,6 @@ async def forgot_password_endpoint(
 def forgot_password_code_validation_endpoint(
     request: ValidateCode, db: Session = Depends(get_db)
 ):
-    print(f"Received recovery code validation request for: {request.usernameOrEmail}")
     success = validate_reset_code(
         db=db, username_or_email=request.usernameOrEmail, code=request.code
     )
@@ -100,7 +97,6 @@ def forgot_password_code_validation_endpoint(
 def reset_password_endpoint(
     request: ChangePasswordRequest, db: Session = Depends(get_db)
 ):
-    print(f"Received password reset request for: {request.usernameOrEmail}")
     success = change_password(
         db=db,
         username_or_email=request.usernameOrEmail,
