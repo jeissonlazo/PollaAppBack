@@ -20,3 +20,5 @@ MAIL_FROM = os.getenv("MAIL_FROM")
 MAIL_SERVER = os.getenv("MAIL_SERVER")
 
 MAIL_PORT = int(os.getenv("MAIL_PORT", 587))
+
+GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")

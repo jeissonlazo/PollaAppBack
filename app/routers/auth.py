@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.core.oauth import oauth
 from starlette.responses import RedirectResponse
-
+from app.core.config import GOOGLE_REDIRECT_URI
 from app.core.database import get_db
 from app.schemas.user import (
     ChangePasswordRequest,
@@ -145,14 +145,14 @@ async def google_callback(request: Request):
         user.external_id = external_id
         db.commit()
         db.refresh(user)
-
     jwt_token = create_access_token({"sub": str(user.id), "roles": user.roles})
 
-    return RedirectResponse(f"http://localhost:5173/oauth-success?token={jwt_token}")
+    return RedirectResponse(
+        f"{GOOGLE_REDIRECT_URI}?token={jwt_token}&user_id={user.id}&username={user.username}&email={user.email}&first_name={user.first_name}&last_name={user.last_name}&id={user.id}&roles={','.join(str(role) for role in user.roles)}"
+    )
 
 
 @router.get("/google/login")
 async def google_login(request: Request):
     redirect_uri = request.url_for("google_callback")
-    print("Redirect URI:", redirect_uri)
     return await oauth.google.authorize_redirect(request, redirect_uri)
