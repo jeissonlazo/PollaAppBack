@@ -188,3 +188,11 @@ def change_password(db: Session, username_or_email: str, code: str, new_password
     db.commit()
 
     return True
+
+
+def get_user_by_email(db: Session, email: str):
+    user = db.query(User).filter(User.email == email).first()
+    if user:
+        roles = db.query(UserRole.role_id).filter(UserRole.user_id == user.id).all()
+        user.roles = [role.role_id for role in roles]
+    return user

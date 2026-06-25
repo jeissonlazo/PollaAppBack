@@ -1,7 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi import Depends
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from app.core.oauth import oauth
+from starlette.responses import RedirectResponse
 
 from app.core.database import get_db
 from app.schemas.user import (
@@ -18,6 +20,7 @@ from app.services.auth_service import (
     forgot_password,
     validate_reset_code,
     verify_email,
+    get_user_by_email,
 )
 from app.core.security import create_access_token
 from app.schemas.user import LoginRequest
@@ -108,3 +111,48 @@ def reset_password_endpoint(
         raise HTTPException(status_code=400, detail="Invalid code")
 
     return {"message": "Code is valid"}
+
+
+@router.get("/google/callback")
+async def google_callback(request: Request):
+
+    token = await oauth.google.authorize_access_token(request)
+
+    user_info = token["userinfo"]
+
+    email = user_info["email"]
+    first_name = user_info["given_name"]
+    last_name = user_info["family_name"]
+    external_id = user_info["sub"]
+
+    # buscar usuario en la BD
+    db = next(get_db())
+    user = get_user_by_email(db, email)
+    if not user:
+        # si no existe -> crearlo
+        user = create_user(
+            db=db,
+            username=email.split("@")[0],
+            email=email,
+            password=external_id,  # usar el external_id como contraseña temporal
+            first_name=first_name,
+            last_name=last_name,
+        )
+    else:
+        # si existe -> actualizar datos
+        user.first_name = first_name
+        user.last_name = last_name
+        user.external_id = external_id
+        db.commit()
+        db.refresh(user)
+
+    jwt_token = create_access_token({"sub": str(user.id), "roles": user.roles})
+
+    return RedirectResponse(f"http://localhost:5173/oauth-success?token={jwt_token}")
+
+
+@router.get("/google/login")
+async def google_login(request: Request):
+    redirect_uri = request.url_for("google_callback")
+    print("Redirect URI:", redirect_uri)
+    return await oauth.google.authorize_redirect(request, redirect_uri)

@@ -5,6 +5,9 @@ from app.routers.groups import router as groups_router
 from app.routers.matches import router as matches_router
 from app.routers.predictions import router as predictions_router
 from app.routers.teams import router as teams_router
+from starlette.middleware.sessions import SessionMiddleware
+from dotenv import load_dotenv
+import os
 
 ##core
 from app.core.database import Base
@@ -13,6 +16,7 @@ from app.core.database import engine
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+load_dotenv()
 # corss
 app.add_middleware(
     CORSMiddleware,
@@ -26,6 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 
 app.include_router(auth_router)
 app.include_router(groups_router)
